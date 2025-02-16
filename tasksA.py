@@ -14,7 +14,7 @@ load_dotenv()
 AIPROXY_TOKEN = os.getenv('AIPROXY_TOKEN')
 
 
-def A1(email="22f1001290@ds.study.iitm.ac.in"):
+def A1(email="23f3003434@ds.study.iitm.ac.in"):
     try:
         process = subprocess.Popen(
             ["uv", "run", "https://raw.githubusercontent.com/sanand0/tools-in-data-science-public/tds-2025-01/project-1/datagen.py", email],
@@ -105,7 +105,7 @@ def A7(filename='/data/email.txt', output_file='/data/email-sender.txt'):
     with open(filename, 'r') as file:
         email_content = file.readlines()
 
-    sender_email = "nelson.dsouza@gmail.com"
+    sender_email = "prashukla@gmail.com"
     for line in email_content:
         if "From" == line[:4]:
             sender_email = (line.strip().split(" ")[-1]).replace("<", "").replace(">", "")
