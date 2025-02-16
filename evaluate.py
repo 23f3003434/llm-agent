@@ -73,10 +73,10 @@ Install `uv` (if required) and run the script `https://raw.githubusercontent.com
 with `{email}` as the only argument
 """
     )
-    return email in await read("/data/format.md")
+    return email in await read("./data/format.md")
 
 
-async def a2(email: str, file: str = "/data/format.md", **kwargs):
+async def a2(email: str, file: str = "./data/format.md", **kwargs):
     original = get_markdown(email)
     expected = subprocess.run(
         ["npx", "prettier@3.4.2", "--stdin-filepath", file],
@@ -101,12 +101,12 @@ Format the contents of `{file}` using `prettier@3.4.2`, updating the file in-pla
 async def a3(email, **kwargs):
     dates = get_dates(email)
     await run(
-        "The file `/data/dates.txt` contains a list of dates, one per line. Count the number of Wednesdays in the list, and write just the number to `/data/dates-wednesdays.txt`"
+        "The file `./data/dates.txt` contains a list of dates, one per line. Count the number of Wednesdays in the list, and write just the number to `/data/dates-wednesdays.txt`"
     )
-    result = await read("/data/dates-wednesdays.txt")
+    result = await read("./data/dates-wednesdays.txt")
     expected = sum(1 for date in dates if parse(date).weekday() == 2)
     if result.strip() != str(expected):
-        return mismatch("/data/dates-wednesdays.txt", expected, result)
+        return mismatch("./data/dates-wednesdays.txt", expected, result)
     return True
 
 
@@ -114,16 +114,16 @@ async def a4(email, **kwargs):
     contacts = get_contacts(email)
     contacts.sort(key=lambda c: (c["last_name"], c["first_name"]))
     await run(
-        "Sort the array of contacts in `/data/contacts.json` by `last_name`, then `first_name`, and write the result to `/data/contacts-sorted.json`"
+        "Sort the array of contacts in `./data/contacts.json` by `last_name`, then `first_name`, and write the result to `/data/contacts-sorted.json`"
     )
-    result = await read("/data/contacts-sorted.json")
+    result = await read("./data/contacts-sorted.json")
     try:
         result = json.loads(result)
     except json.JSONDecodeError:
-        logging.error("🔴 /data/contacts-sorted.json was not valid JSON")
+        logging.error("🔴 ./data/contacts-sorted.json was not valid JSON")
         return False
     if json.dumps(result, sort_keys=True) != json.dumps(contacts, sort_keys=True):
-        return mismatch("/data/contacts-sorted.json", contacts, result)
+        return mismatch("./data/contacts-sorted.json", contacts, result)
     return True
 
 
@@ -132,11 +132,11 @@ async def a5(email, **kwargs):
     files.sort(key=lambda f: f[0])
     expected = "".join([f[1].split("\n")[0] + "\n" for f in files[:10]])
     await run(
-        "Write the first line of the 10 most recent `.log` file in `/data/logs/` to `/data/logs-recent.txt`, most recent first"
+        "Write the first line of the 10 most recent `.log` file in `./data/logs/` to `./data/logs-recent.txt`, most recent first"
     )
-    result = await read("/data/logs-recent.txt")
+    result = await read("./data/logs-recent.txt")
     if result.strip() != expected.strip():
-        return mismatch("/data/logs-recent.txt", expected, result)
+        return mismatch("./data/logs-recent.txt", expected, result)
     return True
 
 
@@ -144,9 +144,9 @@ async def a5(email, **kwargs):
 async def a6(email, **kwargs):
     docs = get_docs(email)
     await run(
-        """Find all Markdown (`.md`) files in `/data/docs/`.
+        """Find all Markdown (`.md`) files in `./data/docs/`.
 For each file, extract the first occurrance of each H1 (i.e. a line starting with `# `).
-Create an index file `/data/docs/index.json` that maps each filename (without the `/data/docs/` prefix) to its title
+Create an index file `./data/docs/index.json` that maps each filename (without the `./data/docs/` prefix) to its title
 (e.g. `{"README.md": "Home", "path/to/large-language-models.md": "Large Language Models", ...}`)"""
     )
     expected = {}
@@ -157,36 +157,36 @@ Create an index file `/data/docs/index.json` that maps each filename (without th
                 title = line[2:].strip()
                 break
         expected[f"{dir}/{file}.md"] = title
-    result = await read("/data/docs/index.json")
+    result = await read("./data/docs/index.json")
     try:
         result = json.loads(result)
     except json.JSONDecodeError:
-        logging.error("🔴 /data/docs/index.json was not valid JSON")
+        logging.error("🔴 ./data/docs/index.json was not valid JSON")
         return False
     if json.dumps(result, sort_keys=True) != json.dumps(expected, sort_keys=True):
-        return mismatch("/data/docs/index.json", expected, result)
+        return mismatch("./data/docs/index.json", expected, result)
     return True
 
 
 async def a7(email, **kwargs):
     expected = get_email(email)["from_email"]
     await run(
-        "`/data/email.txt` contains an email message. Pass the content to an LLM with instructions to extract the sender's email address, and write just the email address to `/data/email-sender.txt`"
+        "`./data/email.txt` contains an email message. Pass the content to an LLM with instructions to extract the sender's email address, and write just the email address to `/data/email-sender.txt`"
     )
-    result = await read("/data/email-sender.txt")
+    result = await read("./data/email-sender.txt")
     if result != expected:
-        return mismatch("/data/email-sender.txt", expected, result)
+        return mismatch("./data/email-sender.txt", expected, result)
     return True
 
 
 async def a8(email, **kwargs):
     data = get_credit_card(email)
     await run(
-        "`/data/credit_card.png` contains a credit card number. Pass the image to an LLM, have it extract the card number, and write it without spaces to `/data/credit-card.txt`"
+        "`./data/credit_card.png` contains a credit card number. Pass the image to an LLM, have it extract the card number, and write it without spaces to `/data/credit-card.txt`"
     )
-    result = await read("/data/credit-card.txt")
+    result = await read("./data/credit-card.txt")
     if re.sub(r"\D", "", result) != re.sub(r"\D", "", data["number"]):
-        return mismatch("/data/credit-card.txt", data["number"], result)
+        return mismatch("./data/credit-card.txt", data["number"], result)
     return True
 
 
@@ -208,10 +208,10 @@ async def a9(email, **kwargs):
     await run(
         "`/data/comments.txt` contains a list of comments, one per line. Using embeddings, find the most similar pair of comments and write them to `/data/comments-similar.txt`, one per line"
     )
-    result = await read("/data/comments-similar.txt")
+    result = await read("./data/comments-similar.txt")
     sorted_result = "\n".join(sorted([line for line in result.split("\n") if line.strip()]))
     if sorted_result != expected:
-        return mismatch("/data/comments-similar.txt", expected, result)
+        return mismatch("./data/comments-similar.txt", expected, result)
     return True
 
 

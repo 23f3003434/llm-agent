@@ -7,11 +7,14 @@ from pathlib import Path
 import os
 import requests
 from scipy.spatial.distance import cosine
-from config import AI_TOKEN as AIPROXY_TOKEN 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+AIPROXY_TOKEN = os.getenv('AIPROXY_TOKEN')
 
 
-
-def A1(email="23f3003434@ds.study.iitm.ac.in"):
+def A1(email="@ds.study.iitm.ac.in"):
     try:
         process = subprocess.Popen(
             ["uv", "run", "https://raw.githubusercontent.com/sanand0/tools-in-data-science-public/tds-2025-01/project-1/datagen.py", email],
@@ -24,18 +27,15 @@ def A1(email="23f3003434@ds.study.iitm.ac.in"):
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail=f"Error: {e.stderr}")
 # A1()
-def A2(prettier_version="prettier@3.4.2", filename="/data/format.md"):
+def A2(prettier_version="prettier@3.4.2", filename="./data/format.md"):
+    command = [r"C:\Program Files\nodejs\npx.cmd", prettier_version, "--write", filename]
     try:
-        # Use 'npx' without a path; works if Node.js is installed and added to PATH
-        command = ["npx", prettier_version, "--write", filename]
         subprocess.run(command, check=True)
         print("Prettier executed successfully.")
     except subprocess.CalledProcessError as e:
         print(f"An error occurred: {e}")
-    except FileNotFoundError:
-        print("npx is not found. Make sure Node.js is installed and npx is available in your PATH.")
 
-def A3(filename='/data/dates.txt', targetfile='/data/dates-wednesdays.txt', weekday=2):
+def A3(filename='./data/dates.txt', targetfile='./data/dates-wednesdays.txt', weekday=2):
     input_file = filename
     output_file = targetfile
     weekday = weekday
@@ -48,7 +48,7 @@ def A3(filename='/data/dates.txt', targetfile='/data/dates-wednesdays.txt', week
     with open(output_file, 'w') as file:
         file.write(str(weekday_count))
 
-def A4(filename="/data/contacts.json", targetfile="/data/contacts-sorted.json"):
+def A4(filename="./data/contacts.json", targetfile="./data/contacts-sorted.json"):
     # Load the contacts from the JSON file
     with open(filename, 'r') as file:
         contacts = json.load(file)
@@ -60,7 +60,7 @@ def A4(filename="/data/contacts.json", targetfile="/data/contacts-sorted.json"):
     with open(targetfile, 'w') as file:
         json.dump(sorted_contacts, file, indent=4)
 
-def A5(log_dir_path='/data/logs', output_file_path='/data/logs-recent.txt', num_files=10):
+def A5(log_dir_path='./data/logs', output_file_path='./data/logs-recent.txt', num_files=10):
     log_dir = Path(log_dir_path)
     output_file = Path(output_file_path)
 
@@ -74,7 +74,7 @@ def A5(log_dir_path='/data/logs', output_file_path='/data/logs-recent.txt', num_
                 first_line = f_in.readline().strip()
                 f_out.write(f"{first_line}\n")
 
-def A6(doc_dir_path='/data/docs', output_file_path='/data/docs/index.json'):
+def A6(doc_dir_path='./data/docs', output_file_path='./data/docs/index.json'):
     docs_dir = doc_dir_path
     output_file = output_file_path
     index_data = {}
@@ -100,7 +100,7 @@ def A6(doc_dir_path='/data/docs', output_file_path='/data/docs/index.json'):
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(index_data, f, indent=4)
 
-def A7(filename='/data/email.txt', output_file='/data/email-sender.txt'):
+def A7(filename='./data/email.txt', output_file='./data/email-sender.txt'):
     # Read the content of the email
     with open(filename, 'r') as file:
         email_content = file.readlines()
@@ -155,7 +155,7 @@ def png_to_base64(image_path):
 #     except Exception as e:
 #         print(f"❌ Error writing {output_file}: {e}")
 
-def A8(filename='/data/credit_card.txt', image_path='/data/credit_card.png'):
+def A8(filename='./data/credit_card.txt', image_path='./data/credit_card.png'):
     # Construct the request body for the AIProxy call
     body = {
         "model": "gpt-4o-mini",
@@ -213,7 +213,7 @@ def get_embedding(text):
     response.raise_for_status()
     return response.json()["data"][0]["embedding"]
 
-def A9(filename='/data/comments.txt', output_filename='/data/comments-similar.txt'):
+def A9(filename='./data/comments.txt', output_filename='./data/comments-similar.txt'):
     # Read comments
     with open(filename, 'r') as f:
         comments = [line.strip() for line in f.readlines()]
@@ -237,7 +237,7 @@ def A9(filename='/data/comments.txt', output_filename='/data/comments-similar.tx
         f.write(most_similar[0] + '\n')
         f.write(most_similar[1] + '\n')
 
-def A10(filename='/data/ticket-sales.db', output_filename='/data/ticket-sales-gold.txt', query="SELECT SUM(units * price) FROM tickets WHERE type = 'Gold'"):
+def A10(filename='./data/ticket-sales.db', output_filename='./data/ticket-sales-gold.txt', query="SELECT SUM(units * price) FROM tickets WHERE type = 'Gold'"):
     # Connect to the SQLite database
     conn = sqlite3.connect(filename)
     cursor = conn.cursor()
